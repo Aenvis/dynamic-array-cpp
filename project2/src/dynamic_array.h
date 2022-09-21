@@ -7,9 +7,9 @@ template<typename dynamic_array>
 class Iterator
 {
 public:
-	using ValueType = typename dynamic_array::ValueType;
-	using PointerType = ValueType*;
-	using ReferenceType = ValueType&;
+	using ValueType = typename dynamic_array::ValueType; //ValueType is defined as T in dynamic_array class, therefore dynamic_array::ValueType == dynamic_array::T
+	using PointerType = ValueType*; // T*
+	using ReferenceType = ValueType&; // T&
 
 private:
 	PointerType m_ptr = nullptr;
@@ -88,10 +88,11 @@ public:
 	{
 		ReAlloc(m_capacity);
 	}
+
 	~dynamic_array()
 	{
 		Clear();
-		operator delete(m_data, m_capacity * sizeof(T));
+		operator delete(m_data, m_capacity * sizeof(T)); //raw memory deletion
 	}
 
 	T& PushBack(const T& data)
@@ -180,7 +181,7 @@ public:
 private:
 	void ReAlloc(size_t newCapacity)
 	{
-		T* newData = static_cast<T*>(operator new(newCapacity * sizeof(T)));
+		T* newData = static_cast<T*>(operator new(newCapacity * sizeof(T))); // raw memory allocation - no constructors are called
 		
 		if (newCapacity < m_size)
 		{
@@ -188,7 +189,7 @@ private:
 		}
 
 		for (size_t i = 0; i < m_size; i++)
-			newData[i] = std::move(m_data[i]);
+			new(&newData[i]) T(std::move(m_data[i])); //using new to call the newData[i] constructor to prevent errors (e.g. when T is std::string)
 
 		for (size_t i = 0; i < m_size; i++)
 			m_data[i].~T();
