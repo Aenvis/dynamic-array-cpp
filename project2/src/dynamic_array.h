@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-#define INIT_CAPACITY 10
+#define INIT_CAPACITY 3
 
 template<typename T>
 class dynamic_array
@@ -22,17 +22,19 @@ public:
 		delete[] m_data;
 	}
 
-	void PushBack(const T& data)
+	T& PushBack(const T& data)
 	{
 		if (m_size >= m_capacity)
 		{
 			std::cout << "Reallocating new array\n";
 			ReAlloc(m_capacity + m_capacity/2 );
 		}
-		m_data[m_size++] = data;
+		m_data[m_size] = data;
+		
+		return m_data[m_size++];
 	}
 
-	void EmplaceBack(T&& data)
+	T& PushBack(T&& data)
 	{
 		if (m_size >= m_capacity)
 		{
@@ -40,6 +42,21 @@ public:
 			ReAlloc(m_capacity + m_capacity / 2);
 		}
 		m_data[m_size++] = std::move(data);
+
+		return m_data[m_size++];
+	}
+
+	template<typename... Args>
+	T& EmplaceBack(Args&&... args)
+	{
+		if (m_size >= m_capacity)
+		{
+			std::cout << "Reallocating new array\n";
+			ReAlloc(m_capacity + m_capacity / 2);
+		}
+		m_data[m_size] = T(std::forward<Args>(args)...);
+
+		return m_data[m_size++];
 	}
 
 	const size_t GetSize() const
@@ -68,11 +85,11 @@ private:
 		}
 
 		m_capacity = newCapacity;
-		T* tempData = new T[m_capacity];
+		T* newData = new T[m_capacity];
 		for (size_t i = 0; i < m_size; i++)
-			tempData[i] = m_data[i];
+			newData[i] = std::move(m_data[i]);
 
 		delete[] m_data;
-		m_data = tempData;
+		m_data = newData;
 	}
 };
