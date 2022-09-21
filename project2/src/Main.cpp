@@ -1,64 +1,78 @@
 #include <iostream>
+#include "dynamic_array.h"
 
-namespace vector
+class Vector3
 {
-#define MAX_INIT_SIZE 1000
-	class dynamic_array
+public:
+	float x = 0.0f, y = 0.0f, z = 0.0f;
+
+public:
+	Vector3()
 	{
-	private:
-		uint64_t m_size = -1;
-		uint64_t m_maxSize = MAX_INIT_SIZE;
-		int* m_arr = new int[m_maxSize];
-		int m_sizeIncrement=1;
-	public:
-		dynamic_array()
-			: m_size(0)
-		{
-			m_arr[m_size] = 0;
-		}
-		~dynamic_array()
-		{
-			delete[] m_arr;
-		}
+		std::cout << "Created\n";
+	}
 
-		void emplace_back(int data)
-		{
-			if (m_size >= m_maxSize)
-			{
-				std::cout << "Reallocating new array\n";
-				m_sizeIncrement++;
-				m_maxSize = m_sizeIncrement * MAX_INIT_SIZE;
-				int* temp_arr = new int[m_maxSize];
-				for (size_t i = 0; i < (m_sizeIncrement - 1) * MAX_INIT_SIZE; i++)
-				{
-					temp_arr[i] = m_arr[i];
-				}
-				delete[] m_arr;
-				m_arr = temp_arr;
-			}
-				m_arr[m_size++] = data;
-		}
+	Vector3(float x, float y, float z)
+		: x(x), y(y), z(z)
+	{
+		std::cout << "Created\n";
+	}
 
-		const int GetSize() const
-		{
-			return m_size;
-		}
+	Vector3(float scalar)
+		: x(scalar), y(scalar), z(scalar)
+	{
+		std::cout << "Created\n";
+	}
 
-		int operator[](int index)
-		{
-			return m_arr[index];
-		}
-	};
+	Vector3(const Vector3& other)
+		: x(other.x), y(other.y), z(other.z)
+	{}
+
+	Vector3(Vector3&& other) noexcept
+		: x(other.x), y(other.y), z(other.z)
+	{}
+
+	~Vector3()
+	{
+		std::cout << "Destroyed\n";
+	}
+
+	Vector3& operator=(const Vector3& other)
+	{
+		std::cout << "Copied\n";
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		return *this;
+	}
+	
+	Vector3& operator=(Vector3&& other) noexcept
+	{
+		std::cout << "Moved\n";
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		return *this;
+	}
+};
+
+void PrintVector(const dynamic_array<Vector3>& array)
+{
+	for (size_t i = 0; i < array.GetSize(); i++)
+	{
+		std::cout << array[i].x << " " << array[i].y << " " << array[i].z << std::endl;
+	}
 }
+
 int main()
 {
-	vector::dynamic_array years;
-	for (size_t i = 0; i < 3002; i++)
-	{
-		years.emplace_back(i);
-	}
-		
-	std::cout << years[1];
+	dynamic_array<Vector3> v;
+	
+	v.EmplaceBack({ 1, 2, 3 });
+	v.EmplaceBack(3);
+	v.EmplaceBack(Vector3());
 
+	PrintVector(v);
+		
 	std::cin.get();
 }
