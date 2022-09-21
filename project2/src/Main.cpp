@@ -25,7 +25,7 @@ namespace vector
 		{
 			if (m_size >= m_maxSize)
 			{
-				std::cout << "Allocating new array twice the size\n";
+				std::cout << "Reallocating new array\n";
 				m_sizeIncrement++;
 				m_maxSize = m_sizeIncrement * MAX_INIT_SIZE;
 				int* temp_arr = new int[m_maxSize];
@@ -33,13 +33,13 @@ namespace vector
 				{
 					temp_arr[i] = m_arr[i];
 				}
+				delete[] m_arr;
 				m_arr = temp_arr;
-				delete[] temp_arr;
 			}
 				m_arr[m_size++] = data;
 		}
 
-		int GetSize() const
+		const int GetSize() const
 		{
 			return m_size;
 		}
@@ -53,12 +53,12 @@ namespace vector
 int main()
 {
 	vector::dynamic_array years;
-	for (size_t i = 0; i < 1002; i++)
+	for (size_t i = 0; i < 3002; i++)
 	{
 		years.emplace_back(i);
 	}
 		
-	std::cout << years.GetSize();
+	std::cout << years[1];
 
 	std::cin.get();
 }
