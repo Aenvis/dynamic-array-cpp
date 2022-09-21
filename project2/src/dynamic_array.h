@@ -3,9 +3,80 @@
 
 #define INIT_CAPACITY 3
 
+template<typename dynamic_array>
+class Iterator
+{
+public:
+	using ValueType = typename dynamic_array::ValueType;
+	using PointerType = ValueType*;
+	using ReferenceType = ValueType&;
+
+private:
+	PointerType m_ptr = nullptr;
+
+public:
+	Iterator(PointerType ptr)
+	: m_ptr(ptr){}
+
+	Iterator& operator++()
+	{
+		m_ptr++;
+		return *this;
+	}
+
+	Iterator operator++(int)
+	{
+		Iterator it = *this;
+		++(*this);
+		return it;
+	}
+
+	Iterator& operator--()
+	{
+		m_ptr--;
+		return *this;
+	}
+	
+	Iterator operator--(int)
+	{
+		Iterator it = *this;
+		--(*this);
+		return it;
+	}
+
+	ReferenceType operator[](int index)
+	{
+		return *(m_ptr + index);
+	}
+
+	PointerType operator->()
+	{
+		return m_ptr;
+	}
+
+	ReferenceType operator*()
+	{
+		return *m_ptr;
+	}
+
+	bool operator==(const Iterator& other) const
+	{
+		return m_ptr == other.m_ptr;
+	}
+	
+	bool operator!=(const Iterator& other) const
+	{
+		return !(*this == other);
+	}
+};
+
 template<typename T>
 class dynamic_array
 {
+public:
+	using ValueType = T;
+	using Iterator = Iterator<dynamic_array<T>>;
+
 private:
 	size_t m_size = 0;
 	size_t m_capacity = INIT_CAPACITY;
@@ -82,6 +153,16 @@ public:
 	const size_t GetSize() const
 	{
 		return m_size;
+	}
+
+	Iterator begin()
+	{
+		return Iterator(m_data);
+	}
+
+	Iterator end()
+	{
+		return Iterator(m_data + m_size);
 	}
 
 	const T& operator[](size_t index) const

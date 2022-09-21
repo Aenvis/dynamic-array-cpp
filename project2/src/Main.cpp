@@ -43,14 +43,12 @@ public:
 		z = other.z;
 		return *this;
 	}
-};
 
-void PrintVector(const dynamic_array<Vector3>& array)
+};
+std::ostream& operator<<(std::ostream& stream, const Vector3& v)
 {
-	for (size_t i = 0; i < array.GetSize(); i++)
-	{
-		std::cout << "(" << array[i].x << " " << array[i].y << " " << array[i].z << ")" << std::endl;
-	}
+	stream << "(" << v.x << " " << v.y << " " << v.z << ")";
+	return stream;
 }
 
 int main()
@@ -61,14 +59,11 @@ int main()
 	v.EmplaceBack(3);
 	v.EmplaceBack(4, 2, 1);
 	v.EmplaceBack();
-	PrintVector(v);
-	v.PopBack();
-	v.PopBack();
-	PrintVector(v);
 
-	v.Clear();
-
-	PrintVector(v);
+	for (dynamic_array<Vector3>::Iterator it = v.begin(); it != v.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
 
 	std::cin.get();
 }
