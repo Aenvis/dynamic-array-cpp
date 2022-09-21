@@ -59,10 +59,16 @@ int main()
 	
 	v.EmplaceBack(1, 2, 3);
 	v.EmplaceBack(3);
+	v.EmplaceBack(4, 2, 1);
 	v.EmplaceBack();
-	v.EmplaceBack();
+	PrintVector(v);
+	v.PopBack();
+	v.PopBack();
+	PrintVector(v);
+
+	v.Clear();
 
 	PrintVector(v);
-		
+
 	std::cin.get();
 }

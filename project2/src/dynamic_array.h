@@ -19,7 +19,8 @@ public:
 	}
 	~dynamic_array()
 	{
-		delete[] m_data;
+		Clear();
+		::operator delete(m_data, m_capacity * sizeof(T));
 	}
 
 	T& PushBack(const T& data)
@@ -54,9 +55,28 @@ public:
 			std::cout << "Reallocating new array\n";
 			ReAlloc(m_capacity + m_capacity / 2);
 		}
-		m_data[m_size] = T(std::forward<Args>(args)...);
 
+		new(&m_data[m_size]) T(std::forward<Args>(args)...);
 		return m_data[m_size++];
+	}
+
+	T& PopBack()
+	{
+		if (m_size > 0)
+		{
+			T res;
+			res = m_data[--m_size];
+			m_data[m_size].~T();
+			return res;
+		}
+	}
+
+	void Clear()
+	{
+		for (size_t i = 0; i < m_size; i++)
+			m_data[i].~T();
+
+		m_size = 0;
 	}
 
 	const size_t GetSize() const
@@ -79,17 +99,21 @@ public:
 private:
 	void ReAlloc(size_t newCapacity)
 	{
+		T* newData = static_cast<T*>(::operator new(newCapacity * sizeof(T)));
+		
 		if (newCapacity < m_size)
 		{
 			m_size = newCapacity;
 		}
 
-		m_capacity = newCapacity;
-		T* newData = new T[m_capacity];
 		for (size_t i = 0; i < m_size; i++)
 			newData[i] = std::move(m_data[i]);
 
-		delete[] m_data;
+		for (size_t i = 0; i < m_size; i++)
+			m_data[i].~T();
+
+		::operator delete(m_data, m_capacity * sizeof(T));
 		m_data = newData;
+		m_capacity = newCapacity;
 	}
 };
