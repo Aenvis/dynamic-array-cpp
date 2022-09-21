@@ -20,7 +20,7 @@ public:
 	~dynamic_array()
 	{
 		Clear();
-		::operator delete(m_data, m_capacity * sizeof(T));
+		operator delete(m_data, m_capacity * sizeof(T));
 	}
 
 	T& PushBack(const T& data)
@@ -99,7 +99,7 @@ public:
 private:
 	void ReAlloc(size_t newCapacity)
 	{
-		T* newData = static_cast<T*>(::operator new(newCapacity * sizeof(T)));
+		T* newData = static_cast<T*>(operator new(newCapacity * sizeof(T)));
 		
 		if (newCapacity < m_size)
 		{
@@ -112,7 +112,7 @@ private:
 		for (size_t i = 0; i < m_size; i++)
 			m_data[i].~T();
 
-		::operator delete(m_data, m_capacity * sizeof(T));
+		operator delete(m_data, m_capacity * sizeof(T));
 		m_data = newData;
 		m_capacity = newCapacity;
 	}
